@@ -1,0 +1,36 @@
+{ 
+
+     "fig4":["-d A C E",
+           "-l ls sf bp", 
+     "-p VB Sort",
+     "-s Random Cyclic Lipschitz GS GSDHb",
+     "-u Lb",    
+     "-pn Sort:FB GSDHb:GSL",
+     "-l2 0 -b 5 -t 1 -f 0 -n 500"],
+
+    "fig5":["-d A C E",
+           "-l ls sf bp", 
+     "-p VB Sort",
+     "-s GSQ GS GSL GSD IHT",
+     "-u Hb",    
+     "-pn Sort:FB IHT:GSQ",
+     "-l2 0 -b 5 -t 1 -f 0 -n 500"],
+
+    "fig6":["-d D E",
+           "-l bp bp", 
+     "-p VB",
+     "-s RTree GSTree GSExactTree RedBlackTree TreePartitions",
+     "-u bpExact",
+     "-pn GSExactTree:General TreePartitions:'Tree Partitions' RedBlackTree:'Red Black' GSTree:'Greedy Tree' RTree:'Random Tree'",
+     "-l2 0 -b -1 -t 1 -f 0 -n 500"],
+
+    "fig7":["-d A",
+            "-l lsl1nn", 
+     "-p VB Sort",
+     "-s gsq-nn",
+     "-u qp-nn TMP-NN Lb-NN",
+     "-pn Sort:FB qp-nn:PN TMP-NN:TMP Lb-NN:PG",
+     "-l2 0 -l1 50000 -b 5 50 100 -t 0 -f 0 -n 500"]
+
+
+}
