@@ -41,7 +41,7 @@ python main.py -e fig4
 
 Figure 5
 --------
-* This experiment compares between different random and greedy block selection rules on three different problems using gradient updates (or the **Lb** update rule).
+* This experiment compares between different greedy block selection rules on three different problems when using matrix updates (or the **Hb** update rule).
 
 * To run the experiment and generate the plots, type the following in Terminal,
 
@@ -58,7 +58,7 @@ python main.py -e fig5
 
 Figure 6
 --------
-* This experiment compares between different random and greedy block selection rules on three different problems using gradient updates (or the **Lb** update rule).
+* This experiment compares between different greedy block selection rules on two quadratic graph-structured problems when using optimal updates.
 
 * To run the experiment and generate the plots, type the following in Terminal,
 ```python
@@ -73,7 +73,7 @@ python main.py -e fig6
 
 Figure 7
 --------
-* This experiment compares between different random and greedy block selection rules on three different problems using gradient updates (or the **Lb** update rule).
+* This experiment compares between different updates when using greedy fixed and variable blocks of different siz
 
 * To run the experiment and generate the plots, type the following in Terminal,
 
