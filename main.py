@@ -3,11 +3,11 @@ matplotlib.use('agg')
 
 import numpy as np
 import train
-import plot
 import parse_args
 
 from itertools import product
 from base import utils as ut
+from base import plot
 
 ROOT = "/mnt/AIDATA/home/issam.laradji"
 
@@ -53,9 +53,7 @@ if __name__ == "__main__":
                         (p == "VB" and s == "GSL") or
                         (p == "VB" and s == "cCyclic")or
                         (p != "VB" and s == "IHT")or
-                        (p != "VB" and s == "GSDHb")or
-                        (dataset_name == "E" and s == "RedBlackTree") or
-                        (dataset_name == "E" and s == "TreePartitions")):
+                        (p != "VB" and s == "GSDHb")):
                         continue
 
                     history = train.train(dataset_name=dataset_name,
@@ -107,9 +105,13 @@ if __name__ == "__main__":
 
 
         ########## PLOT STAGE #########
-        plot.plot(plotList, expName=args.expName, path=plots_path)
+        fig = plot.plot(plotList, expName=args.expName, path=plots_path)
+
+        ut.visplot(fig, win=args.expName)
+        matplotlib.pyplot.close()
+
+
 
 
         ########## SAVE EXP HISTORY ##########
-
         ut.save_pkl(logs_path + args.expName + ".pkl", historyDict)

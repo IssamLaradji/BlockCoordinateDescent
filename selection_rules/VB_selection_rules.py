@@ -5,7 +5,7 @@ from update_rules import update_rules as ur
 #from pulp import *
 import copy
 from scipy.sparse.linalg.eigen.arpack import eigsh as largest_eigsh
-  
+from itertools import cycle
 ########### ------------------------------ ADAPTIVE RULES
 def select(rule, x, A, b, loss, args, iteration):
     """ Adaptive selection rules """
@@ -195,33 +195,67 @@ def select(rule, x, A, b, loss, args, iteration):
       block = np.argsort(s, axis=None)[-block_size:]
 
 
-    elif rule == "TreePartitions":
+    elif rule in ["TreePartitions", "RedBlackTree"]:
       """ select coordinates that form a forest based on BGS or BGSC """
            
       g_func = loss.g_func 
 
-      if "data_black" not in args:
-        tpind = ta.get_tp_indices(args["data_nrows"], 
-                                                  args["data_nrows"], 
-                                                  args["data_y"])
-        args["data_red"] = tpind["white"]
-        args["data_black"] = tpind["black"]
-        
-      if "prev_rb" not in args:
-        args["prev_rb"] = "b"
+      if "graph_blocks" not in args:       
+        yb = args["data_y"]
+        unlabeled = np.where(yb == 0)[0]
+        Wb = args["data_W"][unlabeled][:, unlabeled]
 
-      if args["prev_rb"] == "b":
-        args["prev_rb"] = "r"
-        block = args["data_red"]
- 
-      else:
-        args["prev_rb"] = "b"
-        block = args["data_black"]
+        #################### GET GRAPH BLOCKS
+        if args["data_lattice"] == False:     
+          if rule == "RedBlackTree":
+            graph_blocks = ta.get_rb_general_graph(Wb, L=lipschitz)
+
+          elif rule == "TreePartitions":     
+            graph_blocks = ta.get_tp_general_graph(Wb, L=lipschitz)
+
+          else:
+            raise ValueError("No")
+
+        if args["data_lattice"] == True:     
+          if rule == "RedBlackTree":
+            graph_blocks = ta.get_rb_indices(args["data_nrows"], 
+                                             args["data_ncols"])
+
+          elif rule == "TreePartitions":     
+            graph_blocks = ta.get_tp_indices(args["data_nrows"], 
+                                             args["data_ncols"])
+
+          else:
+            raise ValueError("No")
+
+          graph_blocks = ta.remove_labeled_nodes(graph_blocks, args["data_y"])
+
+        
+        #################### SANITY CHECK
+        if rule == "RedBlackTree":
+          # Assert all blocks have diagonal dependencies
+          for tmp_block in graph_blocks:
+            tmp = A[tmp_block][:, tmp_block]
+            assert np.all(tmp == np.diag(np.diag(tmp)))
+
+        elif rule == "TreePartitions":
+          # Assert all blocks are forests/acyclic
+          for tmp_block in graph_blocks:
+            W_tmp = (Wb[tmp_block][:, tmp_block] != 0).astype(int)
+            assert ta.isForest(W_tmp) 
+        else:
+          raise ValueError("No")
+
+        args["graph_blocks"] = cycle(graph_blocks)
+       
+        
+      block = next(args["graph_blocks"])
 
       block.sort()  
 
       # check if block is diag
-      tmp = A[block][:, block]
+      # tmp = A[block][:, block]
+      # assert np.all(tmp == np.diag(np.diag(tmp)))  
 
       if iteration == 0:
         x = np.random.randn(A.shape[1])
@@ -230,45 +264,6 @@ def select(rule, x, A, b, loss, args, iteration):
                                  A, b, loss, copy.deepcopy(args), block, iteration)
         xG, _ = ur.update("bpGabp", xr.copy(), 
                                 A, b, loss, copy.deepcopy(args) , block, iteration)
-
-        np.testing.assert_array_almost_equal(xE, xG, 3)
-        print("Exact vs GaBP Test passed...")
-
-    elif rule == "RedBlackTree":
-      """ select coordinates that form a forest based on BGS or BGSC """
-      g_func = loss.g_func 
-
-      if "data_red" not in args:
-        rbind = ta.get_rb_indices(args["data_nrows"], 
-                                              args["data_nrows"], 
-                                               args["data_y"])
-        args["data_red"] = rbind["red"]
-        args["data_black"] = rbind["black"]
-
-      if "prev_rb" not in args:
-        args["prev_rb"] = "b"
-
-      if args["prev_rb"] == "b":
-        args["prev_rb"] = "r"
-        block = args["data_red"]
- 
-      else:
-        args["prev_rb"] = "b"
-        block = args["data_black"]
-
-      block.sort()  
-
-      # check if block is diag
-      tmp = A[block][:, block]
-      assert np.all(tmp == np.diag(np.diag(tmp)))    
-
-      if iteration == 0:
-        x = np.random.randn(A.shape[1])
-        xr =  np.random.randn(*x.shape)
-        xE, _ = ur.update("bpExact", xr.copy(), 
-                                 A, b, loss, copy.deepcopy(args), block,iteration)
-        xG, _ = ur.update("bpGabp", xr.copy(), 
-                                A, b, loss, copy.deepcopy(args) , block,iteration)
 
         np.testing.assert_array_almost_equal(xE, xG, 3)
         print("Exact vs GaBP Test passed...")

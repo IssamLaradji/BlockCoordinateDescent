@@ -11,9 +11,9 @@
     "fig5":["-d A C E",
            "-l ls sf bp", 
      "-p VB Sort",
-     "-s GSQ GS GSL GSD IHT",
+     "-s GSQ GS GSL GSD IHT GSDHb",
      "-u Hb",    
-     "-pn Sort:FB IHT:GSQ",
+     "-pn Sort:FB IHT:GSQ GSDHb:GSL",
      "-l2 0 -b 5 -t 1 -f 0 -n 500"],
 
     "fig6":["-d D E",
@@ -30,7 +30,46 @@
      "-s gsq-nn",
      "-u qp-nn TMP-NN Lb-NN",
      "-pn Sort:FB qp-nn:PN TMP-NN:TMP Lb-NN:PG",
-     "-l2 0 -l1 50000 -b 5 50 100 -t 0 -f 0 -n 500"]
+     "-l2 0 -l1 50000 -b 5 50 100 -t 0 -f 0 -n 500"],
+
+
+
+    "cmt": " ------------------- experiments ------------------------------",
+
+
+    "exp6":["-d D E",
+           "-l bp bp", 
+     "-p VB",
+     "-s RTree GSTree GSExactTree RedBlackTree TreePartitions",
+     "-u bpExact",
+     "-pn GSExactTree:General TreePartitions:'Tree Partitions' RedBlackTree:'Red Black' GSTree:'Greedy Tree' RTree:'Random Tree'",
+     "-l2 0 -b -1 -t 1 -f 0 -n 500"],
+    
+    "exp2":["-d A B C D E ",
+           "-l ls lg sf bp bp", 
+     "-p Sort VB",
+     "-s GSQ GS GSL GSD IHT GSDHb",
+     "-u Hb",
+     "-pn Sort:FB IHT:GSQ GSDHb:GSL",
+     "-l2 0 -b 5 50 100 -t 1 -f 0 -n 500"],
+
+
+    "exp6_naive_TP_RB":["-d D E",
+           "-l bp bp", 
+     "-p VB",
+     "-s RTree GSTree GSExactTree RedBlackTree TreePartitions",
+     "-u bpExact",
+     "-pn GSExactTree:General TreePartitions:'Tree Partitions' RedBlackTree:'Red Black' GSTree:'Greedy Tree' RTree:'Random Tree'",
+     "-l2 0 -b -1 -t 1 -f 0 -n 500"],
+
+
+    "exp6_lip_TP_RB":["-d D E",
+           "-l bp bp", 
+     "-p VB",
+     "-s RTree GSTree GSExactTree RedBlackTree TreePartitions",
+     "-u bpExact",
+     "-pn GSExactTree:General TreePartitions:'Tree Partitions' RedBlackTree:'Red Black' GSTree:'Greedy Tree' RTree:'Random Tree'",
+     "-l2 0 -b -1 -t 1 -f 0 -n 500"]
 
 
 }

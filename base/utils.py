@@ -9,7 +9,20 @@ from matplotlib.transforms import Bbox
 import itertools
 import time 
 import pickle
+import pylab as plt
+from scipy.misc import imsave, imread
 
+def visplot(fig, win="tmp"):
+    import visdom
+    fig.savefig("tmp.jpg")
+    img = imread("tmp.jpg").transpose((2,0,1))
+    print(img.shape)
+    vis = visdom.Visdom(port=1111)
+
+    options = dict(title=win)
+    vis.images(img, win=win, env='main', opt=options) 
+    
+    plt.close()
 
 
 def load_pkl(fname):

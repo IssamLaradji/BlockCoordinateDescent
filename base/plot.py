@@ -84,7 +84,7 @@ def plot(plotList, expName, path=""):
     ut.create_dirs(figName)
     pp_main.fig.savefig(figName, dpi = 600)
 
-    plt.close()
+    return pp_main.fig
 
 
         

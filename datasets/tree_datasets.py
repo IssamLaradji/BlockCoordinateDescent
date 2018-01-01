@@ -3,35 +3,44 @@ from scipy.io import savemat, loadmat
 from base import utils as ut 
 
 
-def generate_dataset(root, name):
-    if name == "isingSmall":
-        nrows = 10 
-        ncols = 10
-        W, y = isingSmall(nrows, ncols)
+def generate_datasets_D_or_E(root, name):
+    ##################################################
+    # 1. Get the weighted edges 'W' and the labels 'y'
+    ##################################################
 
-    if name == "ising1":
+    if name == "ising" or name == "dataset_d":
+        # Dataset D - Lattice based quadratic
         nrows = 50 
         ncols = 50
-        W, y = ising1(nrows, ncols)
+        lattice = True
 
-    if name == "ising2":
-        nrows = 50 
-        ncols = 50
-        W, y = ising2(nrows, ncols)
+        # Generate the weighted edges 'W' and the labels 'y'
+        W, y = ising_Wy(nrows, ncols)
 
-    if name == "nearest1":
-        W, y = nearest1(root)
+    if name == "nearest" or name == "dataset_e":
+        # Dataset E - Unstructured quadratic
+        nrows = None 
+        ncols = None 
+        lattice = False
 
+        # Generate the weighted edges 'W' and the labels 'y'
+        W, y = nearest_Wy(root)
+
+    # Assert that the diagonals are zero
     assert np.diag(W).sum() == 0
 
-    # Divide the data to unlabeled and labeled indices
+    ##################################################
+    # 2. Formulate the problem as a linear system Ax=b
+    ##################################################
+
+    # Divide the data into unlabeled and labeled indices
     unlabeled_indices = (y == 0).ravel()
     labeled_indices = (y != 0).ravel()
-
+    
     n = y.size
 
     # Initialize A and b and fill their values based on the 
-    # formulation 0.5 * \sum_{ij} Wij (xi-xj)**2
+    # formulation: 0.5 * \sum_{ij} Wij (xi-xj)**2
     A = np.zeros((n, n))
     b = np.zeros(n)
 
@@ -48,25 +57,16 @@ def generate_dataset(root, name):
     # Grab only the unlabeled indices as the dataset
     A = A[unlabeled_indices][:, unlabeled_indices]
     b = b[unlabeled_indices]
-    
-    if name in ["nearest1"]:
-        return A, b, {}
-    return A, b, {"data_nrows":nrows, "data_ncols":ncols, "data_y":y}
 
 
-def nearest1(root):
+    return A, b, {"data_lattice":lattice,"data_nrows":nrows, 
+                  "data_ncols":ncols, "data_W":W, "data_y":y}
+
+
+def ising_Wy(nrows=50, ncols=50):
+    # For dataset D
     np.random.seed(1)
-    W_y = loadmat('%s/W_y.mat' % (root))
-    W = W_y["W"]
 
-    y = W_y["y"]
-    y = y.ravel()
-
-    assert np.array_equal(np.unique(W), [0,1])
-    return W, y
-
-def ising2(nrows=50, ncols=50):
-    np.random.seed(1)
     # CREATE "W"
     n = ncols * nrows
     W = np.zeros((n, n))
@@ -103,4 +103,18 @@ def ising2(nrows=50, ncols=50):
 
     y[ind] = np.random.randn(100) * 10.
 
+    return W, y
+
+
+def nearest_Wy(root):
+    # For dataset E
+    np.random.seed(1)
+    W_y = loadmat('%s/W_y.mat' % (root))
+    W = W_y["W"]
+
+    y = W_y["y"]
+    y = y.ravel()
+
+    assert np.array_equal(np.unique(W), [0,1])
+    
     return W, y
