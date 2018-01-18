@@ -54,14 +54,14 @@ python main.py -e fig5
 
 
 ```python
-python main.py -e fig6
+python main.py -e fig6a fig6b
 ```
 
 
 
 |         |            |   |
 | ------------- |:-------------:| -----:|
-| ![](Figures/png/fig6a.png)     | ![](Figures/png_plots/fig6b.png) 
+| ![](Figures/png_plots/fig6a.png)     | ![](Figures/png_plots/fig6b.png) 
 
 ### Figure 7
 
