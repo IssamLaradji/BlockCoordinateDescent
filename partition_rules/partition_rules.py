@@ -56,6 +56,7 @@ def get_partition(A, b, loss, block_size, p_rule):
   elif p_rule == "LipGroup" or p_rule =="Sort":
       # Group by lipschitz values
       block_indices = np.argsort(L)
+      
       n_blocks = int(n_params / block_size)
       fixed_blocks = get_fixed_blocks(block_indices, n_blocks, block_size)
 

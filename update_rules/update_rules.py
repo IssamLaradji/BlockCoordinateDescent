@@ -42,6 +42,47 @@ def update(rule, x, A, b, loss, args, block, iteration):
 
     return x, args
 
+  elif rule == "LA":
+    G = g_func(x, A, b, block)
+    L_block =loss.Lb_func(x, A, b, block)
+    
+    Lb = np.max(args["LA_lipschitz"][block])
+    
+    while True:
+      x_new = x.copy()
+      x_new[block] = x_new[block] - G / Lb
+
+      RHS = f_func(x,A,b) - (1./(2. * Lb)) * (G**2).sum()
+      LHS = f_func(x_new,A,b)
+      
+      if LHS <= RHS:
+        break
+
+      Lb *= 2.
+
+    args["LA_lipschitz"][block] = Lb
+
+    return x_new, args
+
+  # Line Search
+  elif rule in ["LS"]:    
+
+    H = h_func(x, A, b, block)
+
+    g = g_func(x, A, b, block)
+
+    f_simple = lambda x: f_func(x, A, b)
+    d_func = lambda alpha: (- alpha * np.dot(np.linalg.pinv(H), g))
+
+    
+
+    alpha = line_search.perform_line_search(x.copy(), g, 
+                                block, f_simple, d_func, alpha0=1.0,
+                                proj=None)
+
+    x[block] = x[block] + d_func(alpha)
+    return x, args
+
   ### Constrained update rules
   elif rule in ["Lb-NN"]:
     G = g_func(x, A, b, block)

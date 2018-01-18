@@ -20,7 +20,7 @@ def visplot(fig, win="tmp"):
     vis = visdom.Visdom(port=1111)
 
     options = dict(title=win)
-    vis.images(img, win=win, env='main', opt=options) 
+    vis.images(img, win=win, env='main') 
     
     plt.close()
 

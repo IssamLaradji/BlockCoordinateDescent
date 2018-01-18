@@ -10,9 +10,10 @@ def select(rule, x, A, b, loss, args,  partition, iteration):
     fixed_blocks = partition
     
     if args["update_rule"] == "LA":
-      if "lipschitz" not in args:
-        args["lipschitz"] = np.ones(x.size)
-      lipschitz = args["lipschitz"]
+      if "LA_lipschitz" not in args:
+        args["LA_lipschitz"] = np.ones(x.size)
+      lipschitz = args["LA_lipschitz"]
+      
     else:
       lipschitz = loss.lipschitz
 

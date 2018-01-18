@@ -195,7 +195,9 @@ def select(rule, x, A, b, loss, args, iteration):
       block = np.argsort(s, axis=None)[-block_size:]
 
 
-    elif rule in ["TreePartitions", "RedBlackTree"]:
+    elif rule in ["TreePartitions", "RedBlackTree", 
+                  "TreePartitionsRandom", 
+                  "RedBlackTreeRandom"]:
       """ select coordinates that form a forest based on BGS or BGSC """
            
       g_func = loss.g_func 
@@ -213,8 +215,16 @@ def select(rule, x, A, b, loss, args, iteration):
           elif rule == "TreePartitions":     
             graph_blocks = ta.get_tp_general_graph(Wb, L=lipschitz)
 
+          elif rule == "RedBlackTreeRandom":
+            graph_blocks = ta.get_rb_general_graph(Wb, L=np.ones(lipschitz.size))
+
+          elif rule == "TreePartitionsRandom":     
+            graph_blocks = ta.get_tp_general_graph(Wb, L=np.ones(lipschitz.size))
+
+
           else:
-            raise ValueError("No")
+
+            raise ValueError("%s - No" % rule)
 
         if args["data_lattice"] == True:     
           if rule == "RedBlackTree":
@@ -226,25 +236,25 @@ def select(rule, x, A, b, loss, args, iteration):
                                              args["data_ncols"])
 
           else:
-            raise ValueError("No")
+            raise ValueError("%s - No" % rule)
 
           graph_blocks = ta.remove_labeled_nodes(graph_blocks, args["data_y"])
 
         
         #################### SANITY CHECK
-        if rule == "RedBlackTree":
+        if rule in ["RedBlackTree", "RedBlackTreeRandom"]:
           # Assert all blocks have diagonal dependencies
           for tmp_block in graph_blocks:
             tmp = A[tmp_block][:, tmp_block]
             assert np.all(tmp == np.diag(np.diag(tmp)))
 
-        elif rule == "TreePartitions":
+        elif rule in ["TreePartitions","TreePartitionsRandom"]:
           # Assert all blocks are forests/acyclic
           for tmp_block in graph_blocks:
             W_tmp = (Wb[tmp_block][:, tmp_block] != 0).astype(int)
             assert ta.isForest(W_tmp) 
         else:
-          raise ValueError("No")
+          raise ValueError("%s - No" % rule)
 
         args["graph_blocks"] = cycle(graph_blocks)
        

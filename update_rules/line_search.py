@@ -14,9 +14,10 @@ def perform_line_search(x_old, grad, block,
     x = x_old.copy()
     g = grad
     
-    if proj is None:
-      proj = lambda x: x
 
+    proj = proj or (lambda x: x)
+
+    
     Z = lambda x, phi, alpha: F(step(x, D(alpha), block, proj)) - F(x) - alpha * phi
 
     t = 1
@@ -53,5 +54,4 @@ def perform_line_search(x_old, grad, block,
         t += 1
 
     return alpha
-
 
