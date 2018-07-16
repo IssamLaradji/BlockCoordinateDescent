@@ -153,3 +153,16 @@ python main.py -e fig13
 |         |            |   |
 | ------------- |:-------------:| -----:|
 | ![](Figures/png_plots/fig13.png)
+
+
+## Citation 
+If you find the code useful for your research, please cite:
+
+```bibtex
+@Article{nutini2017let,
+  title={Let's Make Block Coordinate Descent Go Fast: Faster Greedy Rules, Message-Passing, Active-Set Complexity, and Superlinear Convergence},
+  author={Nutini, Julie and Laradji, Issam and Schmidt, Mark},
+  journal={arXiv},
+  year={2017}
+}
+```
