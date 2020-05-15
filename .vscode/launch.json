@@ -32,8 +32,8 @@
                 //  "adagrad_sls_kernel",
                     // "adagrad_sls_mf",
                     //  "adagrad_sls_deep", 
-                    "-d", "/mnt/datasets/public/issam/data",
-                "-sb", "/mnt/datasets/public/issam/prototypes/bcd/debug/",
+                    "-d", "/mnt/datasets/public/issam/data/CoordinateDescent",
+                "-sb", "/mnt/datasets/public/issam/prototypes/bcd/debug",
                 "-r", "1",
                 // "-j", "1"
         ]

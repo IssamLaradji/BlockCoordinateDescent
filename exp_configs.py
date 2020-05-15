@@ -1,3 +1,6 @@
+from haven import haven_utils as hu 
+
+
 A = {'name':'A', 'loss':'ls'}
 A_l1 = {'name':'A', 'loss':'lsl1nn'}
 B = {'name':'B', 'loss':'lg'}
@@ -26,7 +29,7 @@ EXP_GROUPS['fig6a'] = {'dataset':D,
                       'partition':["VB"],
                       'selection':['RTree', 'GSTree', 'GSExactTree', 'RedBlackTree', 'TreePartitions'],
                       'update':['Hb'],
-                      'block_size'-1, 
+                      'block_size':-1, 
                       'max_iters':500}
 
 EXP_GROUPS['fig6b'] = {'dataset': E,
@@ -40,7 +43,7 @@ EXP_GROUPS['fig6b'] = {'dataset': E,
 
 EXP_GROUPS['fig7'] = {'dataset': A_l1,
      'partition':["VB", "Sort"],
-      'selection:"gsq-nn",
+      'selection':"gsq-nn",
      'update':["qp-nn", "TMP-NN", "Lb-NN"],
      "l1": 50000, 
        'block_size':[5, 50, 100],
@@ -52,7 +55,7 @@ EXP_GROUPS['fig8'] = {'dataset': [A, B, C, D, E],
      'selection':["Cyclic", "Lipschitz", "Perm", "Random", "GS", "GSL", "GSDHb"],
      'update':"Lb",
      'block_size':[5, 50, 100],
-     'max_iter':500},
+     'max_iter':500}
 
 EXP_GROUPS['fig9'] = {'dataset': [A, B, C, D, E],
         'max_iter':500, 
@@ -71,9 +74,9 @@ EXP_GROUPS['fig10'] = {'dataset': ['A','B', 'C', 'D', 'E'],
 
 EXP_GROUPS['fig11'] = {'dataset': [A, B, C, D, E],
      'partition':["Sort", "VB"],
-     'selection:["GSQ", "GS", "GSL", "GSD", "IHT",
+     'selection':["GSQ", "GS", "GSL", "GSD", "IHT"],
      'update':["Hb"],
-     'block_size':[5, 50, 100]
+     'block_size':[5, 50, 100],
       'max_iter':500}
 
 EXP_GROUPS['fig12'] = {'dataset': [B, C],
@@ -85,10 +88,11 @@ EXP_GROUPS['fig12'] = {'dataset': [B, C],
 
 EXP_GROUPS['fig13'] = {'dataset': A_l1,
      'partition':["VB", "Sort"],
-     "'selection:Random",
+     'selection':"Random",
      'update':["qp-nn", "TMP-NN", "Lb-NN"],
      'l1': 50000,
-      'block_size':[5, 50, 100]   
+      'block_size':[5, 50, 100], 
      'max_iter':500}
 
    
+EXP_GROUPS = {k: hu.cartesian_exp_group(v) for k, v in EXP_GROUPS.items()}

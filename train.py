@@ -6,14 +6,14 @@ import pandas as pd
 
 from tqdm import tqdm
 
-from datasets import datasets
-import loss_functions as losses
+from src import datasets
+from src import losses
 from scipy.io import savemat
-from partition_rules import partition_rules
-from selection_rules import VB_selection_rules
-from selection_rules import FB_selection_rules
-from update_rules import update_rules
-from base import utils as ut
+from src.partition_rules import partition_rules
+from src.selection_rules import VB_selection_rules
+from src.selection_rules import FB_selection_rules
+from src.update_rules import update_rules
+from src.base import utils as ut
 
 
 
@@ -32,90 +32,74 @@ work = np.array([84,  220,  478,  558,  596,  753, 1103, 2009, 2044, 2301, 2410,
 
 def train(dataset_name, loss_name, block_size, partition_rule, 
           selection_rule, 
-          update_rule, n_iters, L1, L2, reset=0, optimal=None, 
-          root="", logs_path="", datasets_path=""):
+          update_rule, n_iters, L1, L2,  optimal=None, 
+          datasets_path=""):
     
-    fname = ("%s/%s_%s_%d_%s_%s_%s_%d_%d_%d.npy" % 
-            (logs_path, dataset_name, loss_name, block_size, partition_rule, 
-             selection_rule, update_rule, n_iters, L1, L2))
-
+    np.random.seed(1)
+    # load dataset
+    dataset = datasets.load(dataset_name, path=datasets_path)
+    A, b, args = dataset["A"], dataset["b"], dataset["args"]
     
+    args.update({"L2":L2, "L1":L1, "block_size":block_size, 
+                    "update_rule":update_rule})
 
-    if os.path.exists(fname) and ("1" not in reset and 
-                                  loss_name not in reset and
-                                  update_rule not in reset and
-                                  selection_rule not in reset):        
+    # loss function
+    lossObject = losses.create_lossObject(loss_name, A, b, args)
 
-        history = ut.load_pkl(fname)
+    # Get partitions
+    partition = partition_rules.get_partition(A, b, lossObject, block_size, p_rule=partition_rule)
 
-    else:
-        np.random.seed(1)
-        # load dataset
-        dataset = datasets.load(dataset_name, path=datasets_path)
-        A, b, args = dataset["A"], dataset["b"], dataset["args"]
-        
-        args.update({"L2":L2, "L1":L1, "block_size":block_size, 
-                     "update_rule":update_rule})
+    # Initialize x
+    x = np.zeros(lossObject.n_params)
 
-        # loss function
-        lossObject = losses.create_lossObject(loss_name, A, b, args)
+    score_list = []
 
-        # Get partitions
-        partition = partition_rules.get_partition(A, b, lossObject, block_size, p_rule=partition_rule)
+    pbar = tqdm(desc="starting", total=n_iters, leave=True)
 
-        # Initialize x
-        x = np.zeros(lossObject.n_params)
-
-        history = []
-
-        pbar = tqdm(desc="starting", total=n_iters, leave=True)
-
-        ###### TRAINING STARTS HERE ############
-        block = np.array([])
-        for i in range(n_iters + 1):
-            # Compute loss
-            loss = lossObject.f_func(x, A, b)
-            dis2opt = loss - OPTIMAL_LOSS[dataset_name + "_" + loss_name]
-            history += [{"loss":loss, "iteration":i, "selected":block}]
+    ###### TRAINING STARTS HERE ############
+    block = np.array([])
+    for i in range(n_iters + 1):
+        # Compute loss
+        loss = lossObject.f_func(x, A, b)
+        dis2opt = loss - OPTIMAL_LOSS[dataset_name + "_" + loss_name]
+        score_list += [{"loss":loss, "iteration":i, "selected":block}]
 
 
-            # if i == 10:
-            #     import ipdb; ipdb.set_trace()  # breakpoint c7301fd5 //
+        # if i == 10:
+        #     import ipdb; ipdb.set_trace()  # breakpoint c7301fd5 //
 
-            stdout = ("%d - %s_%s_%s - dis2opt:%.16f - nz: %d/%d" % 
-                     (i, partition_rule, selection_rule, update_rule, dis2opt, (x!=0).sum(), x.size) )   
-            #pbar.set_description(stdout)
-            print(stdout)
+        stdout = ("%d - %s_%s_%s - dis2opt:%.16f - nz: %d/%d" % 
+                    (i, partition_rule, selection_rule, update_rule, dis2opt, (x!=0).sum(), x.size) )   
+        #pbar.set_description(stdout)
+        print(stdout)
 
-            # # Check convergence
-            if (i > 5 and (np.array_equal(work, np.where(x>1e-16)[0]))):
-                history[-1]["converged"] = dis2opt
+        # # Check convergence
+        if (i > 5 and (np.array_equal(work, np.where(x>1e-16)[0]))):
+            score_list[-1]["converged"] = dis2opt
 
-            if (i > 5 and (dis2opt == 0 or dis2opt < 1e-8)):
-                break
+        if (i > 5 and (dis2opt == 0 or dis2opt < 1e-8)):
+            break
 
 
-            # Check increase
-            if (i > 0) and (loss > history[-1]["loss"] + 1e-6): 
-                raise ValueError("loss value has increased...")
+        # Check increase
+        if (i > 0) and (loss > score_list[-1]["loss"] + 1e-6): 
+            raise ValueError("loss value has increased...")
 
-            # Select block
-            if partition is None:
-                block, args = VB_selection_rules.select(selection_rule, x, A, b, lossObject, args, iteration=i)
+        # Select block
+        if partition is None:
+            block, args = VB_selection_rules.select(selection_rule, x, A, b, lossObject, args, iteration=i)
 
-            else:
-                block, args = FB_selection_rules.select(selection_rule, x, A, b, lossObject, args, partition, iteration=i)
+        else:
+            block, args = FB_selection_rules.select(selection_rule, x, A, b, lossObject, args, partition, iteration=i)
 
-            # Update block
-            x, args = update_rules.update(update_rule, x, A, b, lossObject, args=args, block=block, iteration=i)
+        # Update block
+        x, args = update_rules.update(update_rule, x, A, b, lossObject, args=args, block=block, iteration=i)
 
-        pbar.close()
-        ut.save_pkl(fname, history)
+    pbar.close()
 
-    history = pd.DataFrame(history)
+    for score_dict in score_list:
+        score_dict["loss"] -= OPTIMAL_LOSS[dataset_name + "_" + loss_name]
     
-    history["loss"] -= OPTIMAL_LOSS[dataset_name + "_" + loss_name]
-    
-    return history
+    return score_list
 
 

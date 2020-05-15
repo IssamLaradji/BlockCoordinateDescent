@@ -1,7 +1,7 @@
 from . import tree_algorithms as ta
 
 import numpy as np
-from update_rules import update_rules as ur
+from ..update_rules import update_rules as ur
 #from pulp import *
 import copy
 from scipy.sparse.linalg.eigen.arpack import eigsh as largest_eigsh

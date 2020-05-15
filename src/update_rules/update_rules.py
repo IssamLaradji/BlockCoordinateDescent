@@ -3,7 +3,6 @@ import numpy as np
 from . import line_search
 import cvxopt
 
-import utils as ut 
 from cvxopt import solvers, matrix, spmatrix
 from scipy import sparse
 from cvxopt import matrix, solvers

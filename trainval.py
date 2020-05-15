@@ -11,11 +11,10 @@ import os
 import pylab as plt
 import exp_configs
 import time
+import train
 import numpy as np
 
-from src import models
 from src import datasets
-from src import utils as ut
 
 
 import argparse
@@ -42,105 +41,36 @@ def trainval(exp_dict, savedir_base, datadir, reset=False, num_workers=0):
     hu.save_json(os.path.join(savedir, "exp_dict.json"), exp_dict)
     print("Experiment saved in %s" % savedir)
 
-    # Dataset
+    # BCD train
     # ==================
-    # train set
-    plots_path = ROOT + "/Checkpoints/CoordinateDescent/Figures/"
-    logs_path = ROOT + "/Checkpoints/CoordinateDescent/Logs/"
-    datasets_path = ROOT + "/Datasets/CoordinateDescent/"
+    # Ignore the following combinations
+    if ((exp_dict['partition'] != "VB" and exp_dict['selection'] == "BGSC") or
+        (exp_dict['partition'] != "VB" and exp_dict['selection'] == "OMP") or
+        (exp_dict['partition'] == "VB" and exp_dict['selection'] == "GSQ") or
+        (exp_dict['partition'] != "VB" and "GSQ-" in exp_dict['selection']) or
+        (exp_dict['partition'] != "VB" and exp_dict['selection'] == "GSC") or
+        (exp_dict['partition'] != "VB" and exp_dict['selection'] == "Perm") or
+        (exp_dict['partition'] == "VB" and exp_dict['selection'] == "BGSL") or
+        (exp_dict['partition'] == "VB" and exp_dict['selection'] == "GSL") or
+        (exp_dict['partition'] == "VB" and exp_dict['selection'] == "cCyclic")or
+        (exp_dict['partition'] != "VB" and exp_dict['selection'] == "IHT")or
+        (exp_dict['partition'] != "VB" and exp_dict['selection'] == "GSDHb")):
+        print('Experiment will not run...')
+        return
 
-    # LOOP OVER EXPERIMENTS
-    for args in argsList:   
-        plotList = []
-        historyDict = {}
+    score_list = train.train(dataset_name=exp_dict['dataset']['name'],
+                            loss_name=exp_dict['dataset']['loss'],
+                            block_size=exp_dict['block_size'],
+                            partition_rule=exp_dict['partition'],
+                            selection_rule=exp_dict['selection'],
+                            update_rule=exp_dict['update'],
+                            n_iters=exp_dict['max_iters'],
+                            L1=exp_dict.get('l1',0),
+                            L2=0,
+                            datasets_path=datadir)
 
-        ######## TRAIN STAGE #########
-
-        # Loop over datasets
-        for dataset_name, loss_name in zip(args.dataset_names, 
-                                           args.loss_names):
-            figureList = []
-            # Loop over loss names
-            for block_size in args.blockList:  
-
-                traceList = []
-                # Loop over p, s, and u rules
-                for p, s, u in product(args.p_rules, args.s_rules,
-                                       args.u_rules):
-
-                    # Ignore the following combinations
-                    if ((p != "VB" and s == "BGSC") or
-                        (p != "VB" and s == "OMP") or
-                        (p == "VB" and s == "GSQ") or
-                        (p != "VB" and "GSQ-" in s) or
-                        (p != "VB" and s == "GSC") or
-                        (p != "VB" and s == "Perm") or
-                        (p == "VB" and s == "BGSL") or
-                        (p == "VB" and s == "GSL") or
-                        (p == "VB" and s == "cCyclic")or
-                        (p != "VB" and s == "IHT")or
-                        (p != "VB" and s == "GSDHb")):
-                        continue
-
-                    history = train.train(dataset_name=dataset_name,
-                                          loss_name=loss_name,
-                                          block_size=block_size,
-                                          partition_rule=p,
-                                          selection_rule=s,
-                                          update_rule=u,
-                                          n_iters=args.n_iters,
-                                          reset=args.reset,
-                                          L1=args.L1,
-                                          L2=0,
-                                          root=ROOT,
-                                          logs_path=logs_path,
-                                          datasets_path=datasets_path)
-
-                    legend = ut.legendFunc(p, s, u, args.p_rules, args.s_rules, 
-                                           args.u_rules, args.plot_names)
-
-                    
-
-                    if "converged" in history.columns:
-                      ind = np.where(np.isnan(np.array(history["converged"])))[0][-1] + 1
-                      converged = {"Y":history["converged"][ind],
-                                   "X":ind}
-                    else:
-                      converged = None
-
-                    traceList += [{"Y":np.array(history["loss"]), 
-                                   "X":np.array(history["iteration"]),
-                                   "legend":legend,
-                                   "converged":converged}]
-
-                    historyDict[legend] = history
-
-                if block_size == -1:
-                  xlabel = "Iterations"
-                else:
-                  xlabel = "Iterations with %d-sized blocks" % block_size
-                  
-                figureList += [{"traceList":traceList,
-                                "xlabel":xlabel,
-                                "ylabel":("$f(x) - f^*$ for %s on Dataset %s" % 
-                                         (loss2name[loss_name], dataset_name.upper())),
-                                "yscale":"log"}]
-            
-            plotList += [figureList]
-            
-
-
-        ########## PLOT STAGE #########
-        fig = plot.plot(plotList, expName=args.expName, path=plots_path)
-
-        ut.visplot(fig, win=args.expName)
-        matplotlib.pyplot.close()
-
-
-
-
-        ########## SAVE EXP HISTORY ##########
-        ut.save_pkl(logs_path + args.expName + ".pkl", historyDict)
+    hu.save_pkl(os.path.join(savedir, 'score_list.pkl'), score_list)
+    print('Experiment completed.')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

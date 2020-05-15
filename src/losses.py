@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.misc import logsumexp
+from scipy.special import logsumexp
 from scipy.linalg import eigh
 
 from numba import jit
