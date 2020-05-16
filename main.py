@@ -70,10 +70,6 @@ if __name__ == "__main__":
                                           logs_path=logs_path,
                                           datasets_path=datasets_path)
 
-                    legend = ut.legendFunc(p, s, u, args.p_rules, args.s_rules, 
-                                           args.u_rules, args.plot_names)
-
-                    
 
                     if "converged" in history.columns:
                       ind = np.where(np.isnan(np.array(history["converged"])))[0][-1] + 1
@@ -84,7 +80,8 @@ if __name__ == "__main__":
 
                     traceList += [{"Y":np.array(history["loss"]), 
                                    "X":np.array(history["iteration"]),
-                                   "legend":legend,
+                                   "legend":ut.legendFunc(p, s, u, args.p_rules, args.s_rules, 
+                                           args.u_rules, args.plot_names),
                                    "converged":converged}]
 
                     historyDict[legend] = history
@@ -107,11 +104,4 @@ if __name__ == "__main__":
         ########## PLOT STAGE #########
         fig = plot.plot(plotList, expName=args.expName, path=plots_path)
 
-        ut.visplot(fig, win=args.expName)
         matplotlib.pyplot.close()
-
-
-
-
-        ########## SAVE EXP HISTORY ##########
-        ut.save_pkl(logs_path + args.expName + ".pkl", historyDict)

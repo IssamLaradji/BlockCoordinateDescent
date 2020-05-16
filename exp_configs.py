@@ -14,7 +14,6 @@ EXP_GROUPS['fig4'] = {'dataset':[A, C, E],
                       'partition':["VB", "Sort"],
                       'selection':['Random', 'Cyclic', 'Lipschitz', 'GS', 'GSDHb', 'GSL'],
                       'update':['Lb'],
-                      'loss':['ls', 'sf', 'bp'],
                       'block_size':5, 
                       'max_iters':500}
 

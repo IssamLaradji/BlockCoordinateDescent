@@ -58,6 +58,10 @@ def trainval(exp_dict, savedir_base, datadir, reset=False, num_workers=0):
         print('Experiment will not run...')
         return
 
+    score_list_fname = os.path.join(savedir, 'score_list.pkl')
+    if os.path.exists(score_list_fname):
+        return hu.load_pkl(score_list_fname)
+
     score_list = train.train(dataset_name=exp_dict['dataset']['name'],
                             loss_name=exp_dict['dataset']['loss'],
                             block_size=exp_dict['block_size'],
@@ -69,7 +73,7 @@ def trainval(exp_dict, savedir_base, datadir, reset=False, num_workers=0):
                             L2=0,
                             datasets_path=datadir)
 
-    hu.save_pkl(os.path.join(savedir, 'score_list.pkl'), score_list)
+    hu.save_pkl(score_list_fname, score_list)
     print('Experiment completed.')
 
 if __name__ == "__main__":

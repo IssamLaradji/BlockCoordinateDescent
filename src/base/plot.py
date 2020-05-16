@@ -1,13 +1,18 @@
 import numpy as np 
 import pylab as plt
 
-from base import utils as ut
+from . import utils as ut
 from skimage.io import imread 
-from base import pretty_plot
+from . import pretty_plot
 
 
+def plot_score_list_list(exp_list, score_list_list, expName, fname=None):
+    for exp_dict, score_list in zip(exp_list, score_list_list):
+        pass
+    fig = plot(plotList, expName, fname=fname)
+    return 
 
-def plot(plotList, expName, path=""):
+def plot(plotList, expName, savedir_base, fname=None):
 
     # CREATE PLOT OBJECT
     nrows = len(plotList)
@@ -57,32 +62,34 @@ def plot(plotList, expName, path=""):
                         xlabel=figure["xlabel"],
                         yscale=figure["yscale"])
 
-            pp_sub.fig.tight_layout(rect=[0, 0.03, 1, 0.95])
-            axName = "%s/pdf_subplots/%s/%d_%d.pdf" % (path, expName, rowi, fi)
-            ut.create_dirs(axName)
-            pp_sub.fig.savefig(axName, dpi = 600)
+            if fname is not None:
+                pp_sub.fig.tight_layout(rect=[0, 0.03, 1, 0.95])
+                axName = "%s/pdf_subplots/%s/%d_%d.pdf" % (savedir, expName, rowi, fi)
+                ut.create_dirs(axName)
+                pp_sub.fig.savefig(axName, dpi = 600)
 
-            pp_sub.fig.suptitle(expName)
+                pp_sub.fig.suptitle(expName)
 
-            axName = "%s/png_subplots/%s/%d_%d.png" % (path, expName, rowi, fi)
-            ut.create_dirs(axName)
-            pp_sub.fig.savefig(axName)
-            fi += 1
+                axName = "%s/png_subplots/%s/%d_%d.png" % (savedir, expName, rowi, fi)
+                ut.create_dirs(axName)
+                pp_sub.fig.savefig(axName)
+                fi += 1
             #pp_sub.fig.close()
 
 
     # SAVE THE WHOLE PLOT
-    pp_main.fig.tight_layout(rect=[0, 0.03, 1, 0.95])
-    figName = "%s/png_plots/%s.png" % (path, expName)
-    ut.create_dirs(figName)
-    pp_main.fig.savefig(figName)
+    if fname is not None:
+        pp_main.fig.tight_layout(rect=[0, 0.03, 1, 0.95])
+        figName = "%s/png_plots/%s.png" % (savedir_base, expName)
+        ut.create_dirs(figName)
+        pp_main.fig.savefig(figName)
 
-    pp_main.fig.tight_layout()
-    pp_main.fig.suptitle("")
+        pp_main.fig.tight_layout()
+        pp_main.fig.suptitle("")
 
-    figName = "%s/pdf_plots/%s.pdf" % (path, expName)
-    ut.create_dirs(figName)
-    pp_main.fig.savefig(figName, dpi = 600)
+        figName = "%s/pdf_plots/%s.pdf" % (savedir_base, expName)
+        ut.create_dirs(figName)
+        pp_main.fig.savefig(figName, dpi = 600)
 
     return pp_main.fig
 

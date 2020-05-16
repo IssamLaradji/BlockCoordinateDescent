@@ -11,17 +11,6 @@ import time
 import pickle
 import pylab as plt
 
-def visplot(fig, win="tmp"):
-    import visdom
-    fig.savefig("tmp.jpg")
-    img = imread("tmp.jpg").transpose((2,0,1))
-    print(img.shape)
-    vis = visdom.Visdom(port=1111)
-
-    options = dict(title=win)
-    vis.images(img, win=win, env='main') 
-    
-    plt.close()
 
 
 def load_pkl(fname):
@@ -114,6 +103,45 @@ def legendFunc(p, s, u, p_rules, s_rules, u_rules, plot_names=None):
 
 
     return legend[:-1]
+
+# def good_plot(exp_list, score_list_list):
+#     for exp_dict, score_list in zip(exp_list, score_list_list):
+#         score_df = pd.DataFrame(score_list)
+#         legend = ut.legendFunc(p, s, u, args.p_rules, args.s_rules, 
+#                                     args.u_rules, args.plot_names)
+#         if "converged" in score_df.columns:
+#             ind = np.where(np.isnan(np.array(score_df["converged"])))[0][-1] + 1
+#             converged = {"Y":score_df["converged"][ind],
+#                         "X":ind}
+#         else:
+#             converged = None
+
+#             traceList += [{"Y":np.array(score_df["loss"]), 
+#                             "X":np.array(score_df["iteration"]),
+#                             "legend":legend,
+#                             "converged":converged}]
+
+#             # score[legend] = score_df
+
+#         if block_size == -1:
+#             xlabel = "Iterations"
+#         else:
+#             xlabel = "Iterations with %d-sized blocks" % block_size
+            
+#         figureList += [{"traceList":traceList,
+#                         "xlabel":xlabel,
+#                         "ylabel":("$f(x) - f^*$ for %s on Dataset %s" % 
+#                                     (loss2name[loss_name], dataset_name.upper())),
+#                         "yscale":"log"}]
+
+#         plotList += [figureList]
+
+
+
+#         ########## PLOT STAGE #########
+#         fig = plot.plot(plotList, expName=args.expName, path=plots_path)
+
+#         matplotlib.pyplot.close() 
 
 def prune_rules():
     pass 

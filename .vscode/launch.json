@@ -18,6 +18,16 @@
                 // "syn",
                 // "nus_syn",
                 "fig4",
+                "fig5",
+                "fig6a",
+                "fig6b",
+                "fig7",
+                "fig8",
+                "fig9",
+                "fig10",
+                "fig11",
+                "fig12",
+                "fig13"
                 // "adaptive_I_B_C",
                 // "adaptive_II_syn",
                 // "adaptive_II_kernels",
@@ -34,7 +44,7 @@
                     //  "adagrad_sls_deep", 
                     "-d", "/mnt/datasets/public/issam/data/CoordinateDescent",
                 "-sb", "/mnt/datasets/public/issam/prototypes/bcd/debug",
-                "-r", "1",
+                // "-r", "1",
                 // "-j", "1"
         ]
         },
