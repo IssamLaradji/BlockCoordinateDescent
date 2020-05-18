@@ -55,22 +55,25 @@ class FixedOrderFormatter(ScalarFormatter):
         self.orderOfMagnitude = self._order_of_mag
 class PrettyPlot:
     def __init__(self, title=None, ylabel=None, xlabel=None,
-                 fontsize=14, line_width=2.5, markersize=12,
-                 ratio=1.0,axFontSize=18,
+                 fontsize=14, linewidth=2.5, markersize=12,
+                 axFontSize=18,
                  figsize=(13, 10), legend_type="line",
                  yscale="log", subplots=(1,1),
-                 shareRowLabel=True, axTickSize=14):
-        self.axTickSize = int(axTickSize * ratio)
-        self.fontsize = int(fontsize * ratio)
+                 shareRowLabel=True, axTickSize=14, legend_size=10,
+                 box_linewidth=1):
+        self.box_linewidth = box_linewidth
+        self.legend_size = legend_size
+        self.axTickSize = int(axTickSize)
+        self.fontsize = int(fontsize)
         self.shareRowLabel = shareRowLabel
         self.lim_set = False
         self.ylim = None
         self.legend_type = legend_type
         self.yscale = yscale
-        self.line_width = int(line_width * ratio)
-        self.markersize = int(markersize * ratio)
-        self.axFontSize = int(axFontSize * ratio)
-        self.ratio = ratio
+        self.linewidth = int(linewidth)
+        self.markersize = int(markersize)
+        self.axFontSize = int(axFontSize)
+        
         if self.yscale=="log":
             plt.yscale("log")
         #ax.set_yscale('logit')
@@ -239,7 +242,7 @@ class PrettyPlot:
             ##
             line, = ax.plot(x_vals, y_vals, markevery=int(markerFreq), 
                      markersize=int(self.markersize), color=color, 
-                     lw=self.line_width, alpha=1.0,
+                     lw=self.linewidth, alpha=1.0,
                      label=label, ls=ls, marker=marker)
 
 
@@ -251,13 +254,13 @@ class PrettyPlot:
                 box = dict(facecolor="white",
                     edgecolor=color, linestyle=ls,
                     #hatch=marker,
-                    linewidth=int(2*self.ratio), boxstyle="round")
+                    linewidth=int(2), boxstyle="round")
 
                 ax.text(x_point , y_point, label, va='center',ha='center', 
                         rotation=angle,
                         color=color, 
                         bbox=box, 
-                        fontsize=self.fontsize)
+                        fontsize=self.legend_size)
 
             else:
                 plt.legend(loc="best")
@@ -267,11 +270,11 @@ class PrettyPlot:
             ax.set_ylabel(ylabel, fontsize=self.axFontSize)
 
         if not self.shareRowLabel:
-            ax.set_ylabel(ylabel, fontsize=self.axFontSize)
+            ax.set_ylabel(ylabel, fontsize=self.axFontSize*1.1)
 
-        ax.set_xlabel(xlabel, fontsize=self.axFontSize)
+        ax.set_xlabel(xlabel, fontsize=self.axFontSize*1.1)
 
-        ax.tick_params(labelsize=self.axTickSize)
+        ax.tick_params(labelsize=self.axTickSize*1.3)
         ax.tick_params(axis='y', labelsize=int(self.axTickSize*1.5))
         self.y_list = []
         self.x_list = []
@@ -372,7 +375,7 @@ class PrettyPlot:
 
             line, = pFunc(x_vals, y_vals, markevery=markerFreq, 
                      markersize=self.markersize, color=color, 
-                     lw=self.line_width, alpha=0.9,
+                     lw=self.linewidth, alpha=0.9,
                      label=label, ls=ls, marker=marker)
 
 
@@ -384,7 +387,7 @@ class PrettyPlot:
                 box = dict(facecolor="white",
                     edgecolor=color, linestyle=ls,
                     #hatch=marker,
-                    linewidth=int(2*self.ratio), boxstyle="round")
+                    linewidth=self.box_linewidth, boxstyle="round")
 
                 ax.text(x_point , y_point, label, va='center',ha='center', 
                         rotation=angle,
@@ -471,7 +474,7 @@ def plot_csv(results, fig, ax):
         freq = n_points / (int(np.log(n_points)) + 1)
         ax.plot(results[column], markevery=freq, 
                 markersize=8,
-                color=color, lw=self.line_width, label=column, ls=ls, marker=marker)
+                color=color, lw=self.linewidth, label=column, ls=ls, marker=marker)
 
     ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, prop={'size':10},
                ncol=2, mode="expand", borderaxespad=0.,fancybox=True, shadow=True)
