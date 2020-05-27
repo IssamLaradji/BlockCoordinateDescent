@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.io import savemat, loadmat
-from src.base import utils as ut 
+from src import utils as ut 
 from . import tree_datasets
 
 def load(name, path=""):

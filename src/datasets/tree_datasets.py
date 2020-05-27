@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.io import savemat, loadmat
-from src.base import utils as ut 
+from src import utils as ut 
 
 
 def generate_datasets_D_or_E(root, name):

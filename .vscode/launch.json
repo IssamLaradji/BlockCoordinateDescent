@@ -17,8 +17,8 @@
                 // "nlp_2",
                 // "syn",
                 // "nus_syn",
-                "fig4",
-                "fig5",
+                "fig4a",
+                "fig5a",
                 "fig6a",
                 "fig6b",
                 "fig7",
@@ -48,6 +48,35 @@
                 // "-j", "1"
         ]
         },
+        {
+            "name": "view_results",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/view_results.py",
+            "console": "integratedTerminal",
+            "args":["-e", 
+                // "fig4a",
+                // "fig4b",
+                // "fig4c",
+                // "fig5a",
+                // "fig5b",
+                // "fig5c",
+                "fig6a",
+                // "fig6b",
+                // "fig7",
+                // "fig8",
+                // "fig9",
+                // "fig10",
+                // "fig11",
+                // "fig12",
+                // "fig13",
+                "-sb", "/mnt/datasets/public/issam/prototypes/bcd/debug",
+                // "-r", "1",
+                // "-j", "1"
+        ]
+        },
+  
+
 
       
     ]
