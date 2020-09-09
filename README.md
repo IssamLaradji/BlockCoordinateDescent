@@ -1,7 +1,35 @@
-# Let’s Make Block Coordinate Descent Go Fast
 
-## [Link to the arXiv paper](https://arxiv.org/pdf/1712.08859.pdf)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+<h1 align="center">BCD: Let’s Make Block Coordinate Descent Go Fast</h1>
+<h5 align="center">It uses an attention mechanism to learn from the most confident regions in order to infer predictions in the less confident ones.</h5>
+
+[[Paper]](https://arxiv.org/pdf/1712.08859.pdf)  [![](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Check%20out%20LooC!%20%E2%9C%A8%20An%20Localize,%20Overlapping%20Objects%20with%20count%20any%20Supervision%20E2%9C%A8%20https://github.com/ElementAI/looc%20%F0%9F%A4%97) [Share on Facebook]
+
+Image here
+
+## Table of Contents
+
+- [What the research is](#what-the-research-is)
+- [How it works](#how-it-works)
+- [Why it matters](#why-it-matters)
+- [Experiments](#experiments)
+
+## What the research is
+
+Image 2 here
+
+## How it works
+
+Image 3 here
+
+## Why it matters
+
+Image 4 here
+
+## Experiments
+
+Image 5 here
 
 Reproducing the experiments (Figures 4-13) in the paper
 -------------------------------------------------------
