@@ -50,8 +50,9 @@ def trainval(exp_dict, savedir_base, datadir, reset=False, num_workers=0):
         hc.delete_and_backup_experiment(savedir)
 
     os.makedirs(savedir, exist_ok=True)
-    hu.save_json(os.path.join(savedir, "exp_dict.json"), exp_dict)
-    print("Experiment saved in %s" % savedir)
+    if not os.path.join(savedir, "exp_dict.json"):
+        hu.save_json(os.path.join(savedir, "exp_dict.json"), exp_dict)
+        print("Experiment saved in %s" % savedir)
 
     # BCD train
     # ==================
@@ -61,21 +62,24 @@ def trainval(exp_dict, savedir_base, datadir, reset=False, num_workers=0):
 
     score_list_fname = os.path.join(savedir, 'score_list.pkl')
     if os.path.exists(score_list_fname):
-        return hu.load_pkl(score_list_fname)
+        score_list = hu.load_pkl(score_list_fname)
 
-    score_list = train(dataset_name=exp_dict['dataset']['name'],
-                       loss_name=exp_dict['dataset']['loss'],
-                       block_size=exp_dict['block_size'],
-                       partition_rule=exp_dict['partition'],
-                       selection_rule=exp_dict['selection'],
-                       update_rule=exp_dict['update'],
-                       n_iters=exp_dict['max_iters'],
-                       L1=exp_dict.get('l1', 0),
-                       L2=0,
-                       datasets_path=datadir)
+    else:
+        score_list = train(dataset_name=exp_dict['dataset']['name'],
+                        loss_name=exp_dict['dataset']['loss'],
+                        block_size=exp_dict['block_size'],
+                        partition_rule=exp_dict['partition'],
+                        selection_rule=exp_dict['selection'],
+                        update_rule=exp_dict['update'],
+                        n_iters=exp_dict['max_iters'],
+                        L1=exp_dict.get('l1', 0),
+                        L2=0,
+                        datasets_path=datadir)
 
-    hu.save_pkl(score_list_fname, score_list)
+        hu.save_pkl(score_list_fname, score_list)
+
     print('Experiment completed.')
+    return score_list
 
 
 def train(dataset_name, loss_name, block_size, partition_rule,
